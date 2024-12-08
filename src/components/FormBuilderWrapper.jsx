@@ -80,7 +80,7 @@ const FormBuilderWrapper = () => {
         isPreview={isPreview}
       />
 
-      <div className="pt-16 pb-16 min-h-screen px-4 sm:px-6">
+      <div className="py-16 min-h-screen min-w-[800px] flex flex-col items-center px-4 sm:px-6">
         {/* Form Builder or Preview Mode */}
         {!isPreview ? (
           <DndContext
@@ -105,20 +105,20 @@ const FormBuilderWrapper = () => {
             </SortableContext>
           </DndContext>
         ) : (
-          <div className="space-y-4 mt-4">
+          <div className="space-y-4 mt-4 w-full">
             <h2 className="text-sm font-medium">{formName}</h2>
             {questions.map((question) => (
               <div
                 key={question.id}
                 className="border p-4 rounded-md shadow-sm bg-white"
               >
-                <div className="mb-2 text-sm font-medium">{question.title}</div>
+                <div className="mb-2 text-sm font-bold">{question.title}</div>
                 {/* Render question preview */}
                 {question.type === "short_answer" && (
                   <input
                     type="text"
-                    placeholder="Your answer..."
-                    className="w-full px-2 py-1 text-sm border rounded"
+                    placeholder="type your answer"
+                    className="w-full px-2 py-1 font-normal text-sm border rounded"
                   />
                 )}
                 {question.type === "long_answer" && (
@@ -157,7 +157,6 @@ const FormBuilderWrapper = () => {
           </div>
         )}
 
-        {/* Add Question Button */}
         {!isPreview && <AddQuestionButton onAdd={addQuestion} />}
       </div>
 

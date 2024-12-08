@@ -3,8 +3,24 @@
 import React from "react";
 import Image from "next/image";
 import iconMapping from "../utils/iconMapping";
+import QuestionTypeDropdown from "@/components/QuestionTypeDropdown";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-const QuestionBlock = ({ question, updateQuestion, removeQuestion, isPreview }) => {
+const QuestionBlock = ({
+  question,
+  updateQuestion,
+  removeQuestion,
+  isPreview,
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: question.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   const handleUpdate = (field, value) => {
     if (updateQuestion) {
       updateQuestion(question.id, { ...question, [field]: value });
@@ -19,7 +35,7 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion, isPreview }) 
             type="text"
             value={question.answer || ""}
             onChange={(e) => handleUpdate("answer", e.target.value)}
-            placeholder="Your answer..."
+            placeholder=""
             className={`w-full px-2 py-1 border rounded text-sm ${
               isPreview ? "cursor-text" : "cursor-not-allowed"
             }`}
@@ -31,7 +47,7 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion, isPreview }) 
           <textarea
             value={question.answer || ""}
             onChange={(e) => handleUpdate("answer", e.target.value)}
-            placeholder="Your answer..."
+            placeholder=""
             className={`w-full px-2 py-1 border rounded text-sm ${
               isPreview ? "cursor-text" : "cursor-not-allowed"
             }`}
@@ -121,7 +137,7 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion, isPreview }) 
             type="date"
             value={question.answer || ""}
             onChange={(e) => handleUpdate("answer", e.target.value)}
-            className={`w-full px-2 py-1 border rounded text-sm ${
+            className={`w-full px-2 py-1 border rounded font-light text-gray-400 text-sm ${
               isPreview ? "cursor-pointer" : "cursor-not-allowed"
             }`}
             disabled={!isPreview}
@@ -131,10 +147,13 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion, isPreview }) 
         return null;
     }
   };
-  
 
   return (
-    <div className="relative border rounded-md p-3 shadow-sm bg-white space-y-3 text-sm">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative rounded-md p- bg-transparent space-y-3 text-sm"
+    >
       {!isPreview && removeQuestion && (
         <button
           onClick={() => removeQuestion(question.id)}
@@ -151,41 +170,50 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion, isPreview }) 
         </button>
       )}
 
-      <div className="flex items-center justify-between">
-        {!isPreview && (
-          <select
-            value={question.type}
-            onChange={(e) => handleUpdate("type", e.target.value)}
-            className="text-sm px-2 py-1 border rounded focus:ring focus:ring-blue-300"
+      <div className="relative border rounded-md p-3 shadow-sm bg-white space-y-3 text-sm">
+        <div className="absolute top-4 right-4 w-1/4 flex items-center justify-between">
+          <div
+            {...attributes}
+            {...listeners}
+            className="absolute right-0 cursor-grab"
           >
-            <option value="short_answer">Short Answer</option>
-            <option value="long_answer">Long Answer</option>
-            <option value="single_select">Single Select</option>
-            <option value="date">Date</option>
-            <option value="url">URL</option>
-          </select>
-        )}
+            <Image
+              src={iconMapping.drag}
+              alt="Drag"
+              width={20}
+              height={20}
+              className="hover:opacity-80"
+            />
+          </div>
+          {!isPreview && (
+            <QuestionTypeDropdown
+              value={question.type}
+              onChange={(value) => handleUpdate("type", value)}
+              isDisabled={isPreview}
+            />
+          )}
+        </div>
+
+        <input
+          type="text"
+          value={question.title}
+          onChange={(e) => handleUpdate("title", e.target.value)}
+          placeholder="write a question"
+          className="px-2 w-full text-lg font-medium outline-none"
+          disabled={isPreview}
+        />
+
+        <input
+          type="text"
+          value={question.helperText}
+          onChange={(e) => handleUpdate("helperText", e.target.value)}
+          placeholder="subquestion or caption?"
+          className="px-2 w-full text-sm font-light outline-none"
+          disabled={isPreview}
+        />
+
+        {renderQuestionInput()}
       </div>
-
-      <input
-        type="text"
-        value={question.title}
-        onChange={(e) => handleUpdate("title", e.target.value)}
-        placeholder="Question title"
-        className="w-full px-2 py-1 border rounded text-sm focus:ring focus:ring-blue-300"
-        disabled={isPreview}
-      />
-
-      <input
-        type="text"
-        value={question.helperText}
-        onChange={(e) => handleUpdate("helperText", e.target.value)}
-        placeholder="Helper text"
-        className="w-full px-2 py-1 border rounded text-sm focus:ring focus:ring-blue-300"
-        disabled={isPreview}
-      />
-
-      {renderQuestionInput()}
     </div>
   );
 };
