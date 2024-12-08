@@ -16,7 +16,6 @@ const FormBuilderWrapper = () => {
   const [formName, setFormName] = useState("Untitled");
   const [questions, setQuestions] = useState([]);
   const [isPreview, setIsPreview] = useState(false);
-  
 
   // Handlers for Save Draft and Publish
   const handleSaveDraft = () => {
@@ -92,9 +91,15 @@ const FormBuilderWrapper = () => {
               items={questions.map((q) => q.id)}
               strategy={verticalListSortingStrategy}
             >
-              <div className="space-y-4">
+              <div className="space-y-4 mt-4">
                 {questions.map((question) => (
-                  <QuestionBlock key={question.id} question={question} />
+                  <QuestionBlock
+                    key={question.id}
+                    question={question}
+                    updateQuestion={!isPreview ? updateQuestion : null} // Disable editing in Preview Mode
+                    removeQuestion={!isPreview ? removeQuestion : null} // Disable removal in Preview Mode
+                    isPreview={isPreview} // Pass preview state
+                  />
                 ))}
               </div>
             </SortableContext>

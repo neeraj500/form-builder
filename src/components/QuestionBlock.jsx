@@ -1,22 +1,10 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+"use client";
+
+import React from "react";
 import Image from "next/image";
 import iconMapping from "../utils/iconMapping";
 
-const QuestionBlock = ({
-  question,
-  updateQuestion,
-  removeQuestion,
-  isPreview,
-}) => {
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: question.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
+const QuestionBlock = ({ question, updateQuestion, removeQuestion, isPreview }) => {
   const handleUpdate = (field, value) => {
     if (updateQuestion) {
       updateQuestion(question.id, { ...question, [field]: value });
@@ -24,7 +12,6 @@ const QuestionBlock = ({
   };
 
   const renderQuestionInput = () => {
-    // Same as previously updated renderQuestionInput
     switch (question.type) {
       case "short_answer":
         return (
@@ -144,28 +131,10 @@ const QuestionBlock = ({
         return null;
     }
   };
+  
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="relative border rounded-md p-3 shadow-sm bg-white space-y-3 text-sm"
-    >
-      {/* Drag Handle Icon */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="absolute top-2 right-2 cursor-grab"
-      >
-        <Image
-          src={iconMapping.drag}
-          alt="Drag"
-          width={20}
-          height={20}
-          className="hover:opacity-80"
-        />
-      </div>
-
+    <div className="relative border rounded-md p-3 shadow-sm bg-white space-y-3 text-sm">
       {!isPreview && removeQuestion && (
         <button
           onClick={() => removeQuestion(question.id)}
