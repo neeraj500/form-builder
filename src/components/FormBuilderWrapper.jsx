@@ -1,17 +1,22 @@
 "use client";
 
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Footer from "./Footer"; // Import Footer Component
 import QuestionBlock from "@/components/QuestionBlock";
 import AddQuestionButton from "@/components/AddQuestionButton";
 import { DndContext, closestCenter } from "@dnd-kit/core";
-import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
 
 const FormBuilderWrapper = () => {
   const [formName, setFormName] = useState("Untitled");
   const [questions, setQuestions] = useState([]);
   const [isPreview, setIsPreview] = useState(false);
+  
 
   // Handlers for Save Draft and Publish
   const handleSaveDraft = () => {
@@ -41,7 +46,9 @@ const FormBuilderWrapper = () => {
   // Update a question
   const updateQuestion = (id, updatedQuestion) => {
     setQuestions((prev) =>
-      prev.map((question) => (question.id === id ? { ...question, ...updatedQuestion } : question))
+      prev.map((question) =>
+        question.id === id ? { ...question, ...updatedQuestion } : question
+      )
     );
   };
 
@@ -77,16 +84,17 @@ const FormBuilderWrapper = () => {
       <div className="pt-16 pb-16 min-h-screen px-4 sm:px-6">
         {/* Form Builder or Preview Mode */}
         {!isPreview ? (
-          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={questions.map((q) => q.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-4 mt-4">
+          <DndContext
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={questions.map((q) => q.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-4">
                 {questions.map((question) => (
-                  <QuestionBlock
-                    key={question.id}
-                    question={question}
-                    updateQuestion={updateQuestion}
-                    removeQuestion={removeQuestion}
-                  />
+                  <QuestionBlock key={question.id} question={question} />
                 ))}
               </div>
             </SortableContext>
@@ -95,11 +103,18 @@ const FormBuilderWrapper = () => {
           <div className="space-y-4 mt-4">
             <h2 className="text-sm font-medium">{formName}</h2>
             {questions.map((question) => (
-              <div key={question.id} className="border p-4 rounded-md shadow-sm bg-white">
+              <div
+                key={question.id}
+                className="border p-4 rounded-md shadow-sm bg-white"
+              >
                 <div className="mb-2 text-sm font-medium">{question.title}</div>
                 {/* Render question preview */}
                 {question.type === "short_answer" && (
-                  <input type="text" placeholder="Your answer..." className="w-full px-2 py-1 text-sm border rounded" />
+                  <input
+                    type="text"
+                    placeholder="Your answer..."
+                    className="w-full px-2 py-1 text-sm border rounded"
+                  />
                 )}
                 {question.type === "long_answer" && (
                   <textarea
@@ -110,10 +125,28 @@ const FormBuilderWrapper = () => {
                 {question.type === "single_select" &&
                   question.options.map((option, idx) => (
                     <label key={idx} className="block text-sm">
-                      <input type="radio" name={`question-${question.id}`} value={option} className="mr-2" />
+                      <input
+                        type="radio"
+                        name={`question-${question.id}`}
+                        value={option}
+                        className="mr-2"
+                      />
                       {option}
                     </label>
                   ))}
+                {question.type === "date" && (
+                  <input
+                    type="date"
+                    className="w-full px-2 py-1 text-sm border rounded"
+                  />
+                )}
+                {question.type === "url" && (
+                  <input
+                    type="url"
+                    placeholder="Enter a valid URL"
+                    className="w-full px-2 py-1 text-sm border rounded"
+                  />
+                )}
               </div>
             ))}
           </div>

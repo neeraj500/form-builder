@@ -1,16 +1,30 @@
-"use client";
-
-import React from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import Image from "next/image";
 import iconMapping from "../utils/iconMapping";
 
-const QuestionBlock = ({ question, updateQuestion, removeQuestion }) => {
-  const handleUpdate = (field, value) => {
-    updateQuestion(question.id, { ...question, [field]: value });
+const QuestionBlock = ({
+  question,
+  updateQuestion,
+  removeQuestion,
+  isPreview,
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: question.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
   };
 
-  // Function to render the input field based on question type
+  const handleUpdate = (field, value) => {
+    if (updateQuestion) {
+      updateQuestion(question.id, { ...question, [field]: value });
+    }
+  };
+
   const renderQuestionInput = () => {
+    // Same as previously updated renderQuestionInput
     switch (question.type) {
       case "short_answer":
         return (
@@ -18,8 +32,11 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion }) => {
             type="text"
             value={question.answer || ""}
             onChange={(e) => handleUpdate("answer", e.target.value)}
-            placeholder="Answer in max 20 words"
-            className="w-full px-2 py-1 border rounded text-sm focus:ring focus:ring-blue-300"
+            placeholder="Your answer..."
+            className={`w-full px-2 py-1 border rounded text-sm ${
+              isPreview ? "cursor-text" : "cursor-not-allowed"
+            }`}
+            disabled={!isPreview}
           />
         );
       case "long_answer":
@@ -27,33 +44,75 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion }) => {
           <textarea
             value={question.answer || ""}
             onChange={(e) => handleUpdate("answer", e.target.value)}
-            placeholder="Answer in max 500 words"
-            className="w-full h-24 px-2 py-1 border rounded resize-none text-sm focus:ring focus:ring-blue-300"
+            placeholder="Your answer..."
+            className={`w-full px-2 py-1 border rounded text-sm ${
+              isPreview ? "cursor-text" : "cursor-not-allowed"
+            }`}
+            disabled={!isPreview}
           />
         );
       case "single_select":
         return (
           <div className="space-y-2 text-sm">
-            {question.options?.map((option, index) => (
-              <label key={index} className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name={`single-select-${question.id}`}
-                  value={option}
-                  checked={question.answer === option}
-                  onChange={() => handleUpdate("answer", option)}
-                  className="text-blue-500 focus:ring focus:ring-blue-300"
-                />
-                <span>{option}</span>
-              </label>
-            ))}
-            <button
-              type="button"
-              onClick={() => handleUpdate("options", [...question.options, `Option ${question.options.length + 1}`])}
-              className="mt-2 text-blue-500"
-            >
-              Add Option
-            </button>
+            {isPreview ? (
+              question.options?.map((option, index) => (
+                <label key={index} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name={`single-select-${question.id}`}
+                    value={option}
+                    checked={question.answer === option}
+                    onChange={() => handleUpdate("answer", option)}
+                    className={`text-blue-500 ${
+                      isPreview ? "cursor-pointer" : "cursor-not-allowed"
+                    }`}
+                    disabled={!isPreview}
+                  />
+                  <span>{option}</span>
+                </label>
+              ))
+            ) : (
+              <div>
+                {question.options?.map((option, index) => (
+                  <div key={index} className="flex items-center space-x-2 mb-2">
+                    <input
+                      type="text"
+                      value={option}
+                      onChange={(e) =>
+                        handleUpdate("options", [
+                          ...question.options.slice(0, index),
+                          e.target.value,
+                          ...question.options.slice(index + 1),
+                        ])
+                      }
+                      className="w-full px-2 py-1 border rounded text-sm"
+                    />
+                    <button
+                      onClick={() =>
+                        handleUpdate(
+                          "options",
+                          question.options.filter((_, idx) => idx !== index)
+                        )
+                      }
+                      className="text-red-500 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={() =>
+                    handleUpdate("options", [
+                      ...question.options,
+                      `Option ${question.options.length + 1}`,
+                    ])
+                  }
+                  className="text-blue-500 text-sm"
+                >
+                  Add Option
+                </button>
+              </div>
+            )}
           </div>
         );
       case "url":
@@ -63,7 +122,10 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion }) => {
             value={question.answer || ""}
             onChange={(e) => handleUpdate("answer", e.target.value)}
             placeholder="Enter a valid URL"
-            className="w-full px-2 py-1 border rounded text-sm focus:ring focus:ring-blue-300"
+            className={`w-full px-2 py-1 border rounded text-sm ${
+              isPreview ? "cursor-text" : "cursor-not-allowed"
+            }`}
+            disabled={!isPreview}
           />
         );
       case "date":
@@ -72,7 +134,10 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion }) => {
             type="date"
             value={question.answer || ""}
             onChange={(e) => handleUpdate("answer", e.target.value)}
-            className="w-full px-2 py-1 border rounded text-sm focus:ring focus:ring-blue-300"
+            className={`w-full px-2 py-1 border rounded text-sm ${
+              isPreview ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
+            disabled={!isPreview}
           />
         );
       default:
@@ -81,54 +146,77 @@ const QuestionBlock = ({ question, updateQuestion, removeQuestion }) => {
   };
 
   return (
-    <div className="relative border rounded-md p-3 shadow-sm bg-white space-y-3 text-sm">
-      {/* Delete Icon - Top Right */}
-      <button onClick={() => removeQuestion(question.id)} className="w-full flex justify-end" aria-label="Delete question">
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="relative border rounded-md p-3 shadow-sm bg-white space-y-3 text-sm"
+    >
+      {/* Drag Handle Icon */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 right-2 cursor-grab"
+      >
         <Image
-          src={iconMapping.delete}
-          alt="Delete"
+          src={iconMapping.drag}
+          alt="Drag"
           width={20}
           height={20}
-          className="cursor-pointer hover:opacity-80"
+          className="hover:opacity-80"
         />
-      </button>
-
-      {/* Question Type Dropdown (Inside Question Block) */}
-      <div className="flex items-center justify-between">
-        <select
-          value={question.type}
-          onChange={(e) => handleUpdate("type", e.target.value)}  // Trigger the onChange handler
-          className="text-sm px-2 py-1 border rounded focus:ring focus:ring-blue-300"
-        >
-          <option value="short_answer">Short Answer</option>
-          <option value="long_answer">Long Answer</option>
-          <option value="single_select">Single Select</option>
-          <option value="date">Date</option>
-          <option value="url">URL</option>
-        </select>
       </div>
 
-      {/* Question Title Input */}
+      {!isPreview && removeQuestion && (
+        <button
+          onClick={() => removeQuestion(question.id)}
+          className="w-full flex justify-end"
+          aria-label="Delete question"
+        >
+          <Image
+            src={iconMapping.delete}
+            alt="Delete"
+            width={20}
+            height={20}
+            className="cursor-pointer hover:opacity-80"
+          />
+        </button>
+      )}
+
+      <div className="flex items-center justify-between">
+        {!isPreview && (
+          <select
+            value={question.type}
+            onChange={(e) => handleUpdate("type", e.target.value)}
+            className="text-sm px-2 py-1 border rounded focus:ring focus:ring-blue-300"
+          >
+            <option value="short_answer">Short Answer</option>
+            <option value="long_answer">Long Answer</option>
+            <option value="single_select">Single Select</option>
+            <option value="date">Date</option>
+            <option value="url">URL</option>
+          </select>
+        )}
+      </div>
+
       <input
         type="text"
         value={question.title}
         onChange={(e) => handleUpdate("title", e.target.value)}
         placeholder="Question title"
         className="w-full px-2 py-1 border rounded text-sm focus:ring focus:ring-blue-300"
+        disabled={isPreview}
       />
 
-      {/* Helper Text */}
       <input
         type="text"
         value={question.helperText}
         onChange={(e) => handleUpdate("helperText", e.target.value)}
         placeholder="Helper text"
         className="w-full px-2 py-1 border rounded text-sm focus:ring focus:ring-blue-300"
+        disabled={isPreview}
       />
 
-      {/* Render Question Input */}
       {renderQuestionInput()}
-
     </div>
   );
 };
