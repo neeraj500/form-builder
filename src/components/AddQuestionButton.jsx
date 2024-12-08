@@ -1,49 +1,19 @@
-import React from 'react'
+"use client";
+
+import React from "react";
 
 const AddQuestionButton = ({ onAdd }) => {
-    const [showDropdown, setShowDropdown] = useState(false);
-
-    const questionTypes = [
-        'ShortAnswer',
-        'LongAnswer',
-        'Single Select',
-        'Number',
-        'URL'
-    ];
-
-    
   return (
-    <div className='add-question-button'>
+    <div className="relative text-sm mt-6">
       <button
-      type='button'
-      onClick={() => setShowDropdown((prev) => !prev)}
-      className='add-question-button'
+        type="button"
+        onClick={onAdd}  // Calls the onAdd function to add a question
+        className="px-4 py-2 bg-blue-500 text-white font-medium rounded-md shadow hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
       >
         Add Question
       </button>
-
-      {/* dropdown menu */}
-      {
-        showDropdown &&  (
-            <div className='question-type-dropdown'>
-                {questionTypes.map((type) => (
-                    <button
-                    key={type}
-                    type='button'
-                    onClick={() =>{
-                        onAdd(type);
-                        setShowDropdown(false);
-                    }}
-                    className="dropdown-item"
-                    >
-                        {type}
-                    </button>
-                ))}
-            </div>
-        )
-      }
     </div>
-  )
-}
+  );
+};
 
 export default AddQuestionButton;

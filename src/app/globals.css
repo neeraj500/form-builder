@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  @apply bg-slate-200 text-black text-sm;
+  max-width: 800px;
+  margin: auto;
+  /* border: 1px solid brown; */
+}
+
+/* --------------------------------------------------------------------------------------------------- */
+
 /* :root {
   --background: #ffffff;
   --foreground: #171717;
