@@ -80,7 +80,7 @@ const FormBuilderWrapper = () => {
         isPreview={isPreview}
       />
 
-      <div className="py-16 min-h-screen min-w-[800px] flex flex-col items-center px-4 sm:px-6">
+      <div className="py-16 h-dvh flex flex-col items-center px-4 sm:px-6">
         {/* Form Builder or Preview Mode */}
         {!isPreview ? (
           <DndContext
@@ -105,7 +105,7 @@ const FormBuilderWrapper = () => {
             </SortableContext>
           </DndContext>
         ) : (
-          <div className="space-y-4 mt-4 w-full">
+          <div className="space-y-4 mt-4 w-full sm:min-w-[700px]">
             <h2 className="text-sm font-medium">{formName}</h2>
             {questions.map((question) => (
               <div
@@ -161,7 +161,7 @@ const FormBuilderWrapper = () => {
       </div>
 
       {/* Footer */}
-      <Footer onSaveDraft={handleSaveDraft} onPublish={handlePublish} />
+      {/* <Footer onSaveDraft={handleSaveDraft} onPublish={handlePublish} /> */}
     </>
   );
 };

@@ -77,7 +77,7 @@ const QuestionBlock = ({
             ) : (
               <div>
                 {question.options?.map((option, index) => (
-                  <div key={index} className="flex items-center space-x-2 mb-2">
+                  <div key={index} className="space-x-2 my-2 mx-2">
                     <input
                       type="text"
                       value={option}
@@ -88,7 +88,7 @@ const QuestionBlock = ({
                           ...question.options.slice(index + 1),
                         ])
                       }
-                      className="w-full px-2 py-1 border rounded text-sm"
+                      className="w-11/12 px-2 py-2 border border-indigo-300 rounded-md text-sm"
                     />
                     <button
                       onClick={() =>
@@ -99,7 +99,7 @@ const QuestionBlock = ({
                       }
                       className="text-red-500 text-sm"
                     >
-                      Remove
+                      <img src={iconMapping.delete}/>
                     </button>
                   </div>
                 ))}
@@ -107,10 +107,10 @@ const QuestionBlock = ({
                   onClick={() =>
                     handleUpdate("options", [
                       ...question.options,
-                      `Option ${question.options.length + 1}`,
+                      `input a option here`,
                     ])
                   }
-                  className="text-blue-500 text-sm"
+                  className="text-gray-500 text-sm px-2 py-2 underline"
                 >
                   Add Option
                 </button>
@@ -152,7 +152,7 @@ const QuestionBlock = ({
     <div
       ref={setNodeRef}
       style={style}
-      className="relative rounded-md p- bg-transparent space-y-3 text-sm"
+      className="relative rounded-md p-4 bg-transparent space-y-3 text-sm"
     >
       {!isPreview && removeQuestion && (
         <button
@@ -171,11 +171,12 @@ const QuestionBlock = ({
       )}
 
       <div className="relative border rounded-md p-3 shadow-sm bg-white space-y-3 text-sm">
-        <div className="absolute top-4 right-4 w-1/4 flex items-center justify-between">
+        <div className="flex top-2 right-3 items-center sm:absolute sm:px-10 ">
+          {/* drag icon */}
           <div
             {...attributes}
             {...listeners}
-            className="absolute right-0 cursor-grab"
+            className="absolute right-2 sm:absolute cursor-grab" 
           >
             <Image
               src={iconMapping.drag}
@@ -185,6 +186,7 @@ const QuestionBlock = ({
               className="hover:opacity-80"
             />
           </div>
+          {/* dropdown */}
           {!isPreview && (
             <QuestionTypeDropdown
               value={question.type}
@@ -194,13 +196,14 @@ const QuestionBlock = ({
           )}
         </div>
 
+        <div className="space-y-2 py-4">
         <input
           type="text"
           value={question.title}
           onChange={(e) => handleUpdate("title", e.target.value)}
           placeholder="write a question"
-          className="px-2 w-full text-lg font-medium outline-none"
-          disabled={isPreview}
+          className="px-2  w-full text-lg font-medium outline-none"
+          disabled={isPreview}  
         />
 
         <input
@@ -213,6 +216,7 @@ const QuestionBlock = ({
         />
 
         {renderQuestionInput()}
+        </div>
       </div>
     </div>
   );

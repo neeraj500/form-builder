@@ -8,14 +8,16 @@ const QuestionTypeDropdown = ({ value, onChange, isDisabled }) => {
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="text-sm rounded px-2 py-2 outline-none"
+      className="text-sm rounded py-2 outline-none"
       disabled={isDisabled}
     >
-      <option data-content={iconMapping.Number} value="short_answer">Short Answer</option>
-      <option value="long_answer">Long Answer</option>
-      <option value="single_select">Single Select</option>
-      <option value="date">Date</option>
-      <option value="url">URL</option>
+      <option data-content={iconMapping.Number} value="short_answer">
+        short_ans
+      </option>
+      <option value="long_answer">long_ans</option>
+      <option value="single_select">options</option>
+      <option value="date">date</option>
+      <option value="url">url</option>
     </select>
   );
 };
