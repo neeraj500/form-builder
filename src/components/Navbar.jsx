@@ -28,7 +28,6 @@ const Navbar = ({ formName, setFormName, onPreview, isPreview, canPreview }) => 
         >
           {isPreview ? (
             <>
-              <img src={iconMapping.back} alt="Go Back" className="w-4 h-4" />
               Go Back
             </>
           ) : (
